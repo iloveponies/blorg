@@ -13,15 +13,17 @@
   [:div {:class "text-field"}
    [:input {:type "textfield" :placeholder placeholder :name name}]])
 
+(defn text-area [name placeholder]
+  [:div {:class "text-area"}
+   [:textarea {:placeholder placeholder :name name}]])
+
 (defn add-form []
   [:section
    [:h2 "Add post"]
    (form/form-to [:post "/"]
-            [:div {:class "text-field"}
-             (text-field "Title" "title")]
-            [:div {:class "text-area"}
-             (form/text-area {:placeholder "Content"} "content")]
-            [:button {:type "submit" :class "btn"} "Add"])])
+                 (text-field "title" "Title")
+                 (text-area "content" "Content")
+                 [:button {:type "submit" :class "btn"} "Add"])])
 
 (defn list-posts []
   [:section
@@ -55,8 +57,7 @@
 
 (defpage "/css/base" []
   (response/content-type
-   "text/css" (css/css [:html :font-family "sans-serif"])
-))
+   "text/css" (css/css [:html :font-family "sans-serif"])))
 
 (defn -main [& args]
   (println "> blorg blog blorg")
