@@ -44,7 +44,7 @@
        (add-form)]]]]))
 
 (defpage [:post "/"] {:keys [title content]}
-  (swap! posts #(conj % {:title title :content content}))
+  (add-post {:title title :content content})
   (response/redirect "/"))
 
 (defpage "/css/bootstrap" []
