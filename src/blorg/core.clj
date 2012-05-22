@@ -18,21 +18,28 @@
   (spit "posts.json" (json/generate-string @posts)))
 
 (defn load-posts []
-  (swap! posts (fn [old-posts] (json/parse-string (slurp "posts.json") true))))
+  (swap! posts (fn [_] (json/parse-string (slurp "posts.json") true))))
 
-(defn start []
-  (load-posts)
+(defn start-save-timer []
   (swap! timer (fn [t] (Timer.)))
-  (.schedule @timer (proxy [TimerTask] [] (run [] (save-posts))) 0 5000)
+  (.schedule @timer (proxy [TimerTask] [] (run [] (save-posts))) 0 5000))
+
+(defn start-server []
   (swap! blorg-server (fn [s]
                         (when (not (nil? s))
                           (server/stop s))
-                        (server/start 8080)))
+                        (server/start 8080))))
+
+(defn start []
+  (load-posts)
+  (start-save-timer)
+  (start-server)
   "Started")
 
 (defn stop []
   (server/stop @blorg-server)
   (.cancel @timer)
+  (save-posts) ; Once more.
   "Stopped")
 
 (defn text-field [name placeholder]
