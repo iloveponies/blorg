@@ -1,7 +1,22 @@
 (ns blorg.core-test
   (:use clojure.test
-        blorg.core))
+        clj-webdriver.taxi)
+  (:require blorg.core))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(defn with-webapp [test]
+  (set-driver! {:browser :firefox})
+  (test)
+  (quit))
+
+(defn with-selenium [test]
+  (blorg.core/start)
+  (to "http://localhost:8080")
+  (test)
+  (blorg.core/stop))
+
+(use-fixtures :each with-selenium)
+(use-fixtures :once with-webapp)
+
+(deftest front-page
+  (testing "loads"
+    (is (displayed? ".post-list"))))
