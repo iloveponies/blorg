@@ -14,7 +14,7 @@
 
 (defn start-server []
   (stop-server)
-  (swap! blorg-server (fn [_] (server/start 8080))))
+  (reset! blorg-server (server/start 8080)))
 
 (defn start []
   (load-posts)
