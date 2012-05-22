@@ -4,10 +4,36 @@
   (:require [noir.server :as server]
             [noir.response :as response]
             [hiccup.page :as page]
-            [cssgen :as css]))
+            [cssgen :as css]
+            [cheshire.core :as json])
+  (:import [java.util Timer TimerTask]))
 
-(def posts (atom [{:title "foo" :content "bar"}
-                  {:title "quux" :content "ref ref"}]))
+(def posts (atom nil))
+
+(def blorg-server (atom nil))
+
+(def timer (atom nil))
+
+(defn save-posts []
+  (spit "posts.json" (json/generate-string @posts)))
+
+(defn load-posts []
+  (swap! posts (fn [old-posts] (json/parse-string (slurp "posts.json") true))))
+
+(defn start []
+  (load-posts)
+  (swap! timer (fn [t] (Timer.)))
+  (.schedule @timer (proxy [TimerTask] [] (run [] (save-posts))) 0 5000)
+  (swap! blorg-server (fn [s]
+                        (when (not (nil? s))
+                          (server/stop s))
+                        (server/start 8080)))
+  "Started")
+
+(defn stop []
+  (server/stop @blorg-server)
+  (.cancel @timer)
+  "Stopped")
 
 (defn text-field [name placeholder]
   [:div {:class "text-field"}
