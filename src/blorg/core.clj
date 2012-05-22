@@ -17,18 +17,28 @@
 (defn save-posts []
   (spit "posts.json" (json/generate-string @posts)))
 
+(defn load-posts-file [file]
+  (json/parse-string (slurp file) true))
+
 (defn load-posts []
-  (swap! posts (fn [_] (json/parse-string (slurp "posts.json") true))))
+  (swap! posts (fn [_] (load-posts-file "posts.json"))))
 
 (defn start-save-timer []
   (swap! timer (fn [t] (Timer.)))
   (.schedule @timer (proxy [TimerTask] [] (run [] (save-posts))) 0 5000))
 
+(defn stop-server []
+  (swap! blorg-server
+         (fn [s]
+           (when (not (nil? s))
+             (server/stop s))
+           nil)))
+
 (defn start-server []
-  (swap! blorg-server (fn [s]
-                        (when (not (nil? s))
-                          (server/stop s))
-                        (server/start 8080))))
+  (swap! blorg-server
+         (fn [_]
+           (stop-server)
+           (server/start 8080))))
 
 (defn start []
   (load-posts)
