@@ -15,7 +15,7 @@
    [:textarea {:placeholder placeholder :name name}]])
 
 (defn add-form []
-  [:section
+  [:section {:class "add-post-form"}
    [:h2 "Add post"]
    (form/form-to [:post "/"]
                  (text-field "title" "Title")
@@ -23,7 +23,7 @@
                  [:button {:type "submit" :class "btn"} "Add"])])
 
 (defn list-posts []
-  [:section
+  [:section {:class "post-list"}
    (for [post @posts]
     [:section
      [:h3 (:title post)]
