@@ -30,4 +30,4 @@
 
 (defn -main [& args]
   (println "> blorg blog blorg")
-  (server/start 8080))
+  (start))
