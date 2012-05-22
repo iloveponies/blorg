@@ -4,6 +4,9 @@
 
 (def posts (atom nil))
 
+(defn add-post [post]
+  (swap! posts #(conj % {:title title :content content})))
+
 (defn save-posts []
   (spit "posts.json" (json/generate-string @posts)))
 
